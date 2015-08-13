@@ -66,8 +66,8 @@ static CLLocationSpeed const kMpsToMph = 2.2369;
 
     self.locationManager = [CLLocationManager new];
     self.locationManager.delegate = self;
-    self.locationManager.desiredAccuracy = kCLLocationAccuracyBestForNavigation;
-    self.locationManager.distanceFilter = kCLDistanceFilterNone;
+    self.locationManager.desiredAccuracy = kCLLocationAccuracyBest;
+    self.locationManager.distanceFilter = 10;
     self.locationManager.activityType = CLActivityTypeFitness;
 
     [self resetMetrics];
@@ -349,10 +349,11 @@ static CLLocationSpeed const kMpsToMph = 2.2369;
 #pragma mark - Location manager delegate
 
 - (void)locationManager:(CLLocationManager *)manager didUpdateLocations:(NSArray *)locations {
-    [self.routeLocations addObjectsFromArray:locations];
-
     for (CLLocation *location in locations) {
-        [self handleLocationUpdate:location];
+        if (location.horizontalAccuracy < 20) {
+            [self.routeLocations addObjectsFromArray:locations];
+            [self handleLocationUpdate:location];
+        }
     }
 }
 
